@@ -2,21 +2,33 @@ package net.wouto.tntrun.game.jobs;
 
 import net.wouto.tntrun.game.TNTGame;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public abstract class GameJob implements Runnable {
 
     private final TNTGame game;
-    private Runnable exitHook;
+    private List<Runnable> exitHooks;
 
     public GameJob(TNTGame game) {
         this.game = game;
+        this.exitHooks = new ArrayList<>();
     }
 
-    public final Runnable getExitHook() {
-        return exitHook;
+    public void preStart() {
     }
 
-    public final void setExitHook(Runnable exitHook) {
-        this.exitHook = exitHook;
+    public final Collection<Runnable> getExitHooks() {
+        return new ArrayList<>(this.exitHooks);
+    }
+
+    public final void removeExitHook(Runnable exitHook) {
+        this.exitHooks.remove(exitHook);
+    }
+
+    public final void addExitHook(Runnable exitHook) {
+        this.exitHooks.add(exitHook);
     }
 
     public final TNTGame getGame() {

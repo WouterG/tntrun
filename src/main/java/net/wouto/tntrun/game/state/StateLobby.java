@@ -67,6 +67,7 @@ public class StateLobby extends GameState {
         }
         getPlayers().add(p);
         checkGameCountdown();
+        p.teleport(Config.SPAWN_LOCATION);
     }
 
     @EventHandler

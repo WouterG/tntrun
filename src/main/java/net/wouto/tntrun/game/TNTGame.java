@@ -16,9 +16,9 @@ public class TNTGame {
     private JobManager jobManager;
 
     public TNTGame() {
-        this.gameState = new StateLobby(this, new ArrayList<>());
         this.jobManager = new JobManager(this);
         this.area = new GameArea(Config.GAME_AREA_LOC1, Config.GAME_AREA_LOC2);
+        this.setGameState(new StateLobby(this, new ArrayList<>()));
     }
 
     public GameArea getArea() {
@@ -53,6 +53,7 @@ public class TNTGame {
             Bukkit.getServer().shutdown();
             return;
         }
+        System.out.println(String.format("Changing gamestate from %s to %s", this.gameState.getClass().getName(), next.getClass().getName()));
         this.setGameState(next);
     }
 

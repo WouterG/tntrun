@@ -17,7 +17,7 @@ public class Config {
         GAME_AREA_LOC2 = new Location(w, 100, 63, 40);
     }
 
-    public static int MINIMUM_PLAYERS = 2;
+    public static int MINIMUM_PLAYERS = 1;
     public static int START_DELAY_SECONDS = 10;
 
     public static Location SPAWN_LOCATION;

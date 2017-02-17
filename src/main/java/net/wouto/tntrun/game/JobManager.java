@@ -21,17 +21,18 @@ public class JobManager {
 
     public int startJob(GameJob job) {
         BukkitTask task;
+        Runnable wrapJob = doJobWrap(job);
         if (job.isAsync()) {
             if (job.isRepeat()) {
-                task = Bukkit.getScheduler().runTaskTimerAsynchronously(TNTRun.getInstance(), job, job.getDelayTicks(), job.getIntervalTicks());
+                task = Bukkit.getScheduler().runTaskTimerAsynchronously(TNTRun.getInstance(), wrapJob, job.getDelayTicks(), job.getIntervalTicks());
             } else {
-                task = Bukkit.getScheduler().runTaskLaterAsynchronously(TNTRun.getInstance(), job, job.getDelayTicks());
+                task = Bukkit.getScheduler().runTaskLaterAsynchronously(TNTRun.getInstance(), wrapJob, job.getDelayTicks());
             }
         } else {
             if (job.isRepeat()) {
-                task = Bukkit.getScheduler().runTaskTimer(TNTRun.getInstance(), job, job.getDelayTicks(), job.getIntervalTicks());
+                task = Bukkit.getScheduler().runTaskTimer(TNTRun.getInstance(), wrapJob, job.getDelayTicks(), job.getIntervalTicks());
             } else {
-                task = Bukkit.getScheduler().runTaskLater(TNTRun.getInstance(), job, job.getDelayTicks());
+                task = Bukkit.getScheduler().runTaskLater(TNTRun.getInstance(), wrapJob, job.getDelayTicks());
             }
         }
         GameJob.GameJobMeta meta = new GameJob.GameJobMeta();
@@ -75,6 +76,7 @@ public class JobManager {
         return () -> {
             GameJob.GameJobMeta meta = this.jobMetaMap.get(job);
             if (!meta.isStarted()) {
+                job.preStart();
                 meta.setStarted(true);
             }
             meta.setCurrentlyInvoked(true);
@@ -86,10 +88,12 @@ public class JobManager {
             } else if (job.getTotalInvokeCount() > 0) {
                 if (meta.getInvokes() >= job.getTotalInvokeCount()) {
                     meta.setFinished(true);
-                    if (job.getExitHook() != null) {
-                        Bukkit.getScheduler().runTask(TNTRun.getInstance(), job.getExitHook());
+                    if (!job.getExitHooks().isEmpty()) {
+                        for (Runnable runnable : job.getExitHooks()) {
+                            Bukkit.getScheduler().runTask(TNTRun.getInstance(), runnable);
+                        }
                     }
-                    Bukkit.getScheduler().cancelTask(meta.getTaskId());
+                    job.stop();
                 }
             }
         };
