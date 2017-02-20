@@ -5,6 +5,7 @@ import net.wouto.tntrun.game.GameArea;
 import net.wouto.tntrun.game.SimpleLocation;
 import net.wouto.tntrun.game.TNTGame;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -42,6 +43,18 @@ public class BlockDropJob extends GameJob implements Listener {
         this.stage1Blocks = new ArrayList<>();
         this.stage2Blocks = new ArrayList<>();
         this.stage3Blocks = new ArrayList<>();
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (event.getTo().getY() > getGame().getArea().getLocLow().getY() - 3) {
+            return;
+        }
+        getGame().getGameState().getPlayers().remove(event.getPlayer());
+        event.getPlayer().kickPlayer(ChatColor.RED + "You died!");
+        if (getGame().getGameState().getPlayers().size() <= 1) {
+            this.stop();
+        }
     }
 
     @Override
@@ -180,7 +193,7 @@ public class BlockDropJob extends GameJob implements Listener {
 
     @Override
     public long getDelayTicks() {
-        return 200L;
+        return 20L;
     }
 
     @Override

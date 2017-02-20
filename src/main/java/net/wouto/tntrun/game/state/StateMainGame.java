@@ -36,18 +36,6 @@ public class StateMainGame extends GameState {
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.getTo().getY() > getGame().getArea().getLocLow().getY() - 3) {
-            return;
-        }
-        this.getPlayers().remove(event.getPlayer());
-        event.getPlayer().kickPlayer(ChatColor.RED + "You died!");
-        if (this.getPlayers().size() <= 1) {
-            getGame().nextGameState();
-        }
-    }
-
-    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.getPlayer().kickPlayer("Cannot join a running game");
     }
